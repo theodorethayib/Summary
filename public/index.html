@@ -1,0 +1,422 @@
+<html>
+  <head>
+    <title>Summary</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  </head>
+
+  <body>
+
+    <!-- <script>
+      getData();
+      async function getData() {
+        const response = await fetch ('/api');
+        const data = await response.json();
+        console.log(data);
+        var parsed_data = JSON.parse(data);
+        document.getElementById("data_parsed").innerHTML = parsed_data.id;
+      }
+    </script> -->
+
+    <h1 id="graph_title">Summary Graph</h1>
+    <div class="buttons">
+
+      Contrast level:
+      <button onclick = "objCont(-36)">-36</button>
+      <button onclick = "objCont(-28)">-28</button>
+      <button onclick = "objCont(-23)">-23</button>
+      <button onclick = "objCont(-21)">-21</button>
+      <button onclick = "objCont(-14)">-14</button>
+      <button onclick = "objCont(-6)">-6</button>
+      
+      <!-- <div class="action" onclick="objCont(-36)">-36</div>
+      <div class="action" onclick="objCont(-28)">-28</div>
+      <div class="action" onclick="objCont(-23)">-23</div>
+      <div class="action" onclick="objCont(-21)">-21</div>
+      <div class="action" onclick="objCont(-14)">-14</div>
+      <div class="action" onclick="objCont(-6)">-6</div> -->
+      </div>
+
+    <!-- <p>
+      dp_Br40d<input type="checkbox" id="Br40d" onclick="linesgraphed('Br40d')">
+      CNN<input type="checkbox" id="CNN" onclick="linesgraphed('CNN')">
+      Br40d3<input type="checkbox" id="Br40d3" onclick="linesgraphed('Br40d3')">
+      Blend (0.7FBP + 0.3CNN)<input type="checkbox" id="Blend07FPB03CNN" onclick="linesgraphed('Blend07FPB03CNN')">
+      Br40d5 <input type="checkbox" id="Br40d5" onclick="linesgraphed('Br40d5')">
+      Blend (0.5FBP + 0.5CNN)<input type="checkbox" id="Blend05FBP05CNN" onclick="linesgraphed('Blend05FBP05CNN')">
+    </p> -->
+    
+
+    <div style="width:75%">
+      <canvas id="canvas" width="1182" height="591" style="display: block; width: 1182px; height: 591px;"></canvas>
+    </div>
+
+
+    
+    <script>
+      var Br40d_data = [];
+      var CNN_data = [];
+      var Br40d3_data = [];
+      var Blend0703_data = [];
+      var Br40d5_data = [];
+      var Blend0505_data = [];
+      
+      var graphTitle = "";
+      var graphTitleBegninning = "Medium Phantom, 200 QRM, Low Contrast ";
+
+      var graphCanvas = document.getElementById("canvas");
+
+      var graph_Br40d = {
+        label: "B4r0d",
+        data: Br40d_data,
+        lineTension: 0,
+        fill: false,
+        borderColor: 'red'
+      };
+
+      var graph_CNN = {
+        label: "CNN",
+        data: CNN_data,
+        lineTension: 0,
+        fill: false,
+        borderColor: 'blue'
+      };
+
+      var graph_Br40d3 = {
+        label: "B4r0d3",
+        data: Br40d3_data,
+        lineTension: 0,
+        fill: false,
+        borderColor: 'Green'
+      };
+      console.log(Br40d3_data[0] + " SDFSDF");
+
+      var graph_Blend0703 = {
+        label: "Blend 0.7 FBP + 0.3 CNN",
+        data: Blend0703_data,
+        lineTension: 0,
+        fill: false,
+        borderColor: 'Purple'
+      };
+
+      var graph_Br40d5 = {
+        label: "B4r0d5",
+        data: Br40d5_data,
+        lineTension: 0,
+        fill: false,
+        borderColor: 'Yellow'
+      };
+
+      var graph_Blend0505 = {
+        label: "Blend 0.5 FBP + 0.5 CNN",
+        data: Blend0505_data,
+        lineTension: 0,
+        fill: false,
+        borderColor: 'Orange'
+      };
+
+      var graphData = {
+        labels: ['3', '6', '9', '12'],
+        datasets: [graph_Br40d, graph_CNN, graph_Br40d3, graph_Blend0703, graph_Br40d5, graph_Blend0505]
+      };
+
+      var graphOptions = {
+        title: {
+          display: false,
+          text: 'Medium Phantom, 200 QRM, Low Contrast '
+        },
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            boxwidth: 80,
+            fontcolor: 'black'
+          }
+        },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: "Index of detectability (d')"
+            }
+          }],
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: "Object diameter (mm)"
+            }
+          }]
+        }
+      };
+
+      var lineChart = new Chart(graphCanvas, {
+        type: 'line',
+        data: graphData,
+        options: graphOptions
+      });
+
+
+
+    //   var ctx = document.getElementById('canvas');
+    //   var myChart = new Chart(ctx, {
+    //     type: 'line',
+    //     data: {
+    //         labels: ['3', '6', '9', '12'],
+    //         datasets: [{
+    //             label: '# of Votes',
+    //             data: Br40d_data,
+    //             backgroundColor: [
+    //                 'rgba(255, 99, 132, 0.2)',
+    //                 'rgba(54, 162, 235, 0.2)',
+    //                 'rgba(255, 206, 86, 0.2)',
+    //                 'rgba(75, 192, 192, 0.2)',
+    //                 'rgba(153, 102, 255, 0.2)',
+    //                 'rgba(255, 159, 64, 0.2)'
+    //             ],
+    //             borderColor: [
+    //                 'rgba(255, 99, 132, 1)',
+    //                 'rgba(54, 162, 235, 1)',
+    //                 'rgba(255, 206, 86, 1)',
+    //                 'rgba(75, 192, 192, 1)',
+    //                 'rgba(153, 102, 255, 1)',
+    //                 'rgba(255, 159, 64, 1)'
+    //             ],
+    //             borderWidth: 1
+    //         }]
+    //     },
+    //     options: {
+    //         scales: {
+    //             yAxes: [{
+    //                 ticks: {
+    //                     beginAtZero: true
+    //                 }
+    //             }]
+    //         }
+    //     }
+    // });
+
+      
+
+      getData();
+      async function getData() {
+        const response = await fetch ('/api');
+        const data = await response.json();
+
+        var count = 0;
+
+        for (item of data) {
+          Br40d_data[count] = parseFloat(`${item.dp_B4r0d}`);
+          CNN_data[count] = parseFloat(`${item.dp_CNN}`);
+          Br40d3_data[count] = parseFloat(`${item.dp_Br40d3}`);
+          Blend0703_data[count] = parseFloat(`${item.dp_Blend_07FBP_03CNN}`);
+          Br40d5_data[count] = parseFloat(`${item.dp_Br40d5}`);
+          Blend0505_data[count] = parseFloat(`${item.dp_Blend_05FBP_05CNN}`);
+
+          // if (Number.isNaN(Br40d_data[count])) {
+          //   console.log("Br40d NAN");
+          // } else {
+          //   console.log("Br40d " + Br40d_data[count])
+          // }
+
+          // if (Number.isNaN(CNN_data[count])) {
+          //   console.log("CNN NAN");
+          // } else {
+          //   console.log("CNN " + CNN_data[count])
+          // }
+
+          // if (Number.isNaN(Br40d3_data[count])) {
+          //   console.log("Br40d3_data NAN");
+          // } else {
+          //   console.log("Br40d3_data " + Br40d3_data[count])
+          // }
+
+          // if (Number.isNaN(Blend0703_data[count])) {
+          //   console.log("Blend0703_data NAN");
+          // } else {
+          //   console.log("Blend0703_data " + Blend0703_data[count])
+          // }
+
+          // if (Number.isNaN(Br40d5_data[count])) {
+          //   console.log("Br40d5_data NAN");
+          // } else {
+          //   console.log("Br40d5_data " + Br40d5_data[count])
+          // }
+
+          // if (Number.isNaN(Blend0505_data[count])) {
+          //   console.log("Blend0505_data NAN");
+          // } else {
+          //   console.log("Blend0505_data " + Blend0505_data[count])
+          // }
+
+          count++;
+
+
+          // const root = document.createElement('div');
+          // const thisdiv = document.createElement('div');
+          // const seconddiv = document.createElement('div');
+          // thisdiv.textContent = `ID: ${item.id}`;
+          // seconddiv.textContent = `B4r0d: ${item.dp_B4r0d}`;
+
+          // console.log("SDFSDFSDFSF " + `${item.dp_B4r0d}`);
+          
+
+          // root.append(thisdiv, seconddiv);
+          // document.body.append(root);
+        }
+
+        // var doCount = 0;
+        // for (item in Br40d_data) {
+        //   console.log(Br40d_data[doCount]);
+        //   console.log("WDF");
+        //   doCount++;
+        // }
+
+
+
+
+        console.log(data);
+        var parsed_data = JSON.parse(JSON.stringify(data));
+        
+        // function printValues(parsed_data) {
+        //   var numcount = 0;
+        //   for(var k in parsed_data) {
+        //     if(parsed_data[k] instanceof Object) {
+        //       console.log("NUMCOUNT" + numcount);
+        //         var numcount = k;
+        //         printValues(parsed_data[k]);
+        //     } else {
+        //         // document.write(parsed_data[k] + "<br>");
+        //         // console.log(numcount + "SDFSDF " + parsed_data[k]);
+        //         // var test = numcount.toString;
+        //         // console.log(test);
+        //         document.getElementById(numcount).innerHTML = parsed_data[k];
+        //     };
+        // }
+        // }
+        
+
+        // printValues(parsed_data)
+
+        // document.write(parsed_data["id"]);
+
+
+        // console.log("STRINGIFIED: " + parsed_data);
+        // var parsed_data2 = {"id": {
+        //   "id1": "25",
+        //   "id2":"30",
+        //   "id3":"40"
+        // }};
+        // document.getElementById("data_parsed").innerHTML = parsed_data2.id;
+      }
+
+      function objCont(x) {
+        const data = { object_contrast: x };
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        };
+        fetch('/api', options);
+        getData();
+        switch(x) {
+          case -36:
+            document.getElementById("graph_title").textContent = graphTitleBegninning + 'I: -36 HU';
+            break;
+          case -28:
+            document.getElementById("graph_title").textContent = graphTitleBegninning + 'II: -28 HU';
+            break;
+          case -23:
+            document.getElementById("graph_title").textContent = graphTitleBegninning + 'III: -23 HU';
+            break;
+          case -21:
+            document.getElementById("graph_title").textContent = graphTitleBegninning + 'IV: -21 HU';
+            break;
+          case -14:
+            document.getElementById("graph_title").textContent = graphTitleBegninning + 'V: -14 HU';
+            break;
+          case -6:
+            document.getElementById("graph_title").textContent = graphTitleBegninning + 'VI: -6 HU';
+            break;
+        }
+        lineChart.update();
+      };
+
+      // function linesgraphed(x) {
+      //   var checkBox;
+      //   var data;
+      //   var options;
+
+      //   if (x.localeCompare("Br40d") == 0) {
+      //     checkBox = document.getElementById("Br40d");
+      //     data = { Br40d: checkBox.checked };
+      //     console.log(x + " is " + checkBox.checked);
+      //     options = {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(data)
+      //     };
+      //   } else if (x.localeCompare("CNN") == 0) {
+      //     checkBox = document.getElementById("CNN");
+      //     data = { CNN: checkBox.checked };
+      //     console.log(x + " is " + checkBox.checked);
+      //     options = {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(data)
+      //     }; 
+      //   } else if (x.localeCompare("Br40d3") == 0) {
+      //     checkBox = document.getElementById("Br40d3");
+      //     data = { Br40d3: checkBox.checked };
+      //     console.log(x + " is " + checkBox.checked);
+      //     options = {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(data)
+      //     };
+      //   } else if (x.localeCompare("Br40d5") == 0) {
+      //     checkBox = document.getElementById("Br40d5");
+      //     data = { Br40d5: checkBox.checked };
+      //     console.log(x + " is " + checkBox.checked);
+      //     options = {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(data)
+      //     };
+      //   } else if (x.localeCompare("Blend05FBP05CNN") == 0) {
+      //     checkBox = document.getElementById("Blend05FBP05CNN");
+      //     data = { Blend05FBP05CNN: checkBox.checked };
+      //     console.log(x + " is " + checkBox.checked);
+      //     options = {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(data)
+      //     };
+      //   } else if (x.localeCompare("Blend07FPB03CNN") == 0) {
+      //     checkBox = document.getElementById("Blend07FPB03CNN");
+      //     data = { Blend07FPB03CNN: checkBox.checked };
+      //     console.log(x + " is " + checkBox.checked);
+      //     options = {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(data)
+      //     };
+      //   }
+      //   fetch('/api', options);
+      // };
+    </script>
+  </body>
+</html>
