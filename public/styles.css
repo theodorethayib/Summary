@@ -9,22 +9,6 @@ h1 {
     font-size: 32px;
 }
 
-.action {
-  font-weight: bold;
-  padding: 1em;
-  border: 1px solid #424242;
-  float: left;
-  margin: 0.25em;
-  font-size: 16px;
-  /* position: relative;
-  left: 50%; */
-}
-
 .buttons {
     text-align: center;
-}
-
-h2 {
-    text-align: left;
-    font-size: 24px;
 }
